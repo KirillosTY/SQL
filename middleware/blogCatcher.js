@@ -17,8 +17,7 @@ const blogFinder = async(req,res, next) => {
 
 
 const blogValidation = (blog) => {
-    console.log('visited')
-   if(blog.likes == undefined || blog.title == undefined || blog.url == undefined){
+   if(!( blog.title && blog.url) || isNaN(blog.likes)){
         errorHandler('Blog is not valid', 404)
    }
 }
