@@ -6,14 +6,22 @@ const cors = require('cors')
 const {connectToDB} = require('./utils/db')
 const {router:blog_route} = require('./controllers/blogRouter')
 const { error } = require('./middleware/error')
-
+const userRouter = require('./controllers/userRouter')
+const loginRouter = require('./controllers/loginRouter')
+const { tokenGetter } = require('../part12-containers-applications/Bloglist/part4/utils/middleware')
+const { tokenUser } = require('./middleware/userCatcher')
 app.use(cors())
 
 
 
 app.use(express.json())
 
-app.use('/api/blogs/',blog_route)
+app.use(tokenGetter)
+app.use('/api/login', loginRouter)
+
+app.use('/api/blogs/',tokenUser,blog_route)
+app.use('/api/user',tokenUser,userRouter)
+
 
 app.use(error)
 

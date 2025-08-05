@@ -1,22 +1,29 @@
 const router = require('express').Router()
-const {errorHandler: Error, errorHandler} = require('../middleware/error.js')
-const {Blog} = require('../models/index')
+const {Blog, User} = require('../models/index')
 
 const {blogFinder, blogValidation} = require('../middleware/blogCatcher.js')
+const { LOCK } = require('sequelize')
 router.get('/', async(req,res) => {
-   const blogs  = await Blog.findAll()
-   
+   const blogs  = await Blog.findAll({
+    attributes: {exclude: ['userId']},
+    include: {
+      model: User,
+      attributes: ['username']
+    }
+   })
+   console.log('blogs', blogs)
    return res.status(200).json(blogs)
 
 })  
 
 
-router.post('/', async(req,res) => {
-    blogValidation(req.body)
-   const blogToAdd = req.body
+router.post('/',blogValidation, async(req,res) => {
 
-      const blogAdded = await Blog.create(blogToAdd)
-      return res.status(200).json(blogAdded)
+    const blogToAdd = req.body
+    console.log('blogToAdd', blogToAdd, req.tokenUser)
+    blogToAdd.userId = req.user.id
+    const blogAdded = await Blog.create(blogToAdd)
+    return res.status(200).json(blogAdded)
      
    
    
@@ -36,13 +43,14 @@ router.put('/:id',blogFinder ,async(req,res) => {
 
 router.delete('/:id',blogFinder ,async(req,res) => {
  
-  const blog = req.blog
+  
+  let blog = req.blog
   try {
-    const blog = blog.destroy()
-   return res.status(204)
+     blog = blog.destroy()
+   return res.status(204).send("Success")
   } catch(error) {
     console.log('error', error)
-    return res.status(403).send("Id is invalid", idToDelete)
+    return res.status(403).send("Id is invalid")
 
   }
 })
