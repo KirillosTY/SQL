@@ -2,8 +2,9 @@ const {User} = require('../models/userModel')
 const userRouter = require('express').Router()
 const {userValidation} = require('../middleware/userCatcher')
 const { Blog } = require('../models/blogModel')
+const { tokenUser } = require('../middleware/userCatcher')
 
-userRouter.get('/',async (req,res) => {
+userRouter.get('/',tokenUser, async (req,res) => {
 
     const users = await User.findAll({
         include: {
@@ -28,7 +29,7 @@ userRouter.post('/',userValidation, async(req,res) => {
 })
 
 
-userRouter.put('/:username', async(req,res) => {
+userRouter.put('/:username',tokenUser, async(req,res) => {
 
     //add validation
 

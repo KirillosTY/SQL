@@ -1,5 +1,5 @@
 const {sequelize} = require('../utils/db')
- const {Model, DataTypes } = require('sequelize')
+ const {Model, DataTypes, Op } = require('sequelize')
 
 class BlogModal extends Model {}
 
@@ -24,6 +24,19 @@ BlogModal.init({
   likes: {
     type:DataTypes.INTEGER,
     allowNull:false
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue:2000,
+    validate: {
+      max: {args: new Date().getFullYear(),
+        msg:"Can not be in the future"
+      },
+      min: {args: 1991,
+        msg:"Can not be before 1991"
+      },
+    }
   }
 }
  ,
@@ -31,7 +44,8 @@ BlogModal.init({
   sequelize,
   underscored:true,
   timestamps: true,
-  modelName:'blog'
+  modelName:'blog',
+  
   }
 )
 

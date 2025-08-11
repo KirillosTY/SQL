@@ -21,7 +21,7 @@ app.use(tokenGetter)
 app.use('/api/login', loginRouter)
 
 app.use('/api/blogs/',tokenUser,blog_route)
-app.use('/api/user',tokenUser,userRouter)
+app.use('/api/user',userRouter)
 app.use('/api/authors/',tokenUser,authorRouter)
 
 app.use(error)
