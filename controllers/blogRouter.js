@@ -2,14 +2,43 @@ const router = require('express').Router()
 const {Blog, User} = require('../models/index')
 
 const {blogFinder, blogValidation} = require('../middleware/blogCatcher.js')
-const { LOCK } = require('sequelize')
+const { LOCK, Op } = require('sequelize')
 router.get('/', async(req,res) => {
+  let where = {}
+
+  console.log('req.query.search', req.query.search)
+  if(req.query.search){
+    where = 
+    {
+      [Op.or]:
+        [
+          {
+            title: {
+            [Op.substring]: req.query.search
+            }
+          },
+          {
+            author: {
+              [Op.substring]: req.query.search
+            }
+          }
+        ]
+      }
+    }
+  
+  
+
    const blogs  = await Blog.findAll({
     attributes: {exclude: ['userId']},
+    order: [
+      ['likes', 'DESC']
+
+    ],
     include: {
       model: User,
       attributes: ['username']
-    }
+    },
+    where
    })
    console.log('blogs', blogs)
    return res.status(200).json(blogs)
