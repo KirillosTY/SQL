@@ -16,11 +16,24 @@ const migConf = {
         context: sequelize.getQueryInterface(),
         logger:console
 }
+
+const insertConf = {
+      migrations: {
+            glob: 'utils/insertDefaults.js',
+        },
+        storage: new SequelizeStorage({sequelize, tableName:'seeders'}),
+        context: sequelize.getQueryInterface(),
+        logger:console
+}
+
 const runMigrations = async() => {
     const migrator = new Umzug(migConf)
     const migrations = await migrator.up()
+    const migInsert = new Umzug(insertConf)
+    const migInserts= await migInsert.up()
     console.log('Migrations are up',{
-        files:migrations.map((m) => m.name)
+        files:migrations.map((m) => m.name),
+        fileInserts:migInserts.map((m) => m.name)
     } )
 }
 
@@ -46,11 +59,13 @@ const rollBackMigs = async() => {
     await sequelize.authenticate()
     const migrator = new Umzug(migConf)
     
-    const migrations = await migrator.down(1)
+    const migrations = await migrator.down({to:0})
      console.log('Migrations are down',{
         files:migrations.map((m) => m.name)
     } )
 }
+
+
 
 module.exports = {
     sequelize,

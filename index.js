@@ -11,6 +11,7 @@ const loginRouter = require('./controllers/loginRouter')
 const { tokenGetter } = require('../part12-containers-applications/Bloglist/part4/utils/middleware')
 const { tokenUser } = require('./middleware/userCatcher')
 const authorRouter = require('./controllers/authorRouter')
+const readRouter = require('./controllers/readingListRouter')
 app.use(cors())
 
 
@@ -23,7 +24,7 @@ app.use('/api/login', loginRouter)
 app.use('/api/blogs/',tokenUser,blog_route)
 app.use('/api/user',userRouter)
 app.use('/api/authors/',tokenUser,authorRouter)
-
+app.use('/api/readinglists', readRouter)
 app.use(error)
 
 

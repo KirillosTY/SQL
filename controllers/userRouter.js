@@ -3,14 +3,32 @@ const userRouter = require('express').Router()
 const {userValidation} = require('../middleware/userCatcher')
 const { Blog } = require('../models/blogModel')
 const { tokenUser } = require('../middleware/userCatcher')
+const { Reading } = require('../models')
 
 userRouter.get('/',tokenUser, async (req,res) => {
 
+    
+
     const users = await User.findAll({
-        include: {
-        model: Blog,
-        attributes: { exclude: ['userId'] }
-        }
+        include:[ {
+                model: Blog,
+                attributes: { 
+                    exclude: ['userId'],
+                }
+            },
+            {
+                model: Blog,
+                as:'reading_aim',
+                attributes: ['title'],
+                through: {
+                attributes: [
+                    'read',
+                    'id'
+                ]
+                }
+            }
+           
+        ]
     })
 
     return res.status(200).json(users)
@@ -40,5 +58,44 @@ userRouter.put('/:username',tokenUser, async(req,res) => {
 })
 
 
+
+userRouter.get('/:id',tokenUser, async (req,res) => {
+    let where
+    
+    if(req.query.search){
+        where = {
+          read: req.query.search
+       
+        }
+      
+    }
+
+    const users = await User.findByPk(req.params.id,{
+        include:[ {
+                model: Blog,
+                attributes: { 
+                    exclude: ['userId'],
+                }
+            },
+            {
+                model: Blog,
+                as:'reading_aim',
+                attributes: ['title'],
+                through: {
+                  attributes: [
+                      'read',
+                      'id'
+                  ],
+                  where
+                }
+            }
+           
+        ],
+        
+    })
+
+    return res.status(200).json(users)
+
+})
 
 module.exports = userRouter
