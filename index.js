@@ -12,6 +12,7 @@ const { tokenGetter } = require('../part12-containers-applications/Bloglist/part
 const { tokenUser } = require('./middleware/userCatcher')
 const authorRouter = require('./controllers/authorRouter')
 const readRouter = require('./controllers/readingListRouter')
+const logoutRouter = require('./controllers/logoutRouter')
 app.use(cors())
 
 
@@ -20,6 +21,7 @@ app.use(express.json())
 
 app.use(tokenGetter)
 app.use('/api/login', loginRouter)
+app.use('/api/logout',tokenUser, logoutRouter)
 
 app.use('/api/blogs/',tokenUser,blog_route)
 app.use('/api/user',userRouter)

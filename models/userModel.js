@@ -29,6 +29,11 @@ userModel.init({
   name: {
     type: DataTypes.TEXT,
     allowNull:false
+  },
+  access: {
+     type: DataTypes.BOOLEAN,
+        toDefaultValue:true,
+        allowNull:false
   }
 }
  ,
